@@ -12,32 +12,53 @@ import {Todo} from './todo';
 export class AppComponent {
   title = 'todo-app';
 
-  // No longer needed, now handled by TodoListHeaderComponent
-  // newTodo: Todo = new Todo();
+  todos: Todo[] = [];
 
-  constructor(private todoDataService : TodoDataService){}
+  constructor(private todoDataService: TodoDataService) {}
 
-  // No longer needed, now handled by TodoListHeaderComponent
-  // addTodo() {
-  //  this.todoDataService.addTodo(this.newTodo);
-  //  this.newTodo = new Todo();
- // }
+  public ngOnInit() {
+    this.todoDataService
+      .getAllTodos()
+      .subscribe(
+        (todos) => {
+          this.todos = todos;
+        }
+      );
+  }
 
   // Add new method to handle event emitted by TodoListHeaderComponent
   onAddTodo(todo: Todo) {
-    this.todoDataService.addTodo(todo);
+    this.todoDataService
+      .addTodo(todo)
+      .subscribe(
+        (newTodo) => {
+          this.todos = this.todos.concat(newTodo);
+        }
+      );
   }
 
   onRemoveTodo(todo: Todo) {
-    this.todoDataService.deleteTodoById(todo.id);
+    this.todoDataService
+      .deleteTodoById(todo.id)
+      .subscribe(
+        (_) => {
+          this.todos = this.todos.filter((t) => t.id !== todo.id);
+        }
+      );
   }
 
-  get todos() {
-    return this.todoDataService.getAllTodos();
-  }
+  //get todos() {
+    //return this.todoDataService.getAllTodos();
+  //}
 
   onToggleTodoComplete(todo: Todo) {
-    this.todoDataService.toggleTodoComplete(todo);
+    this.todoDataService
+      .toggleTodoComplete(todo)
+      .subscribe(
+        (updatedTodo) => {
+          todo = updatedTodo;
+        }
+      );
   }
 
 }
